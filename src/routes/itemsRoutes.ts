@@ -13,6 +13,7 @@ import type { Item } from "../libs/types.ts";
 import { items } from "../db/db.js";
 //import uuid
 import { v4 as uuidv4 } from 'uuid';
+import { success } from "zod";
 
 const router = Router();
 
@@ -24,16 +25,18 @@ router.get("/:userId",(req: Request, res: Response) => {
 
     if (!parseResult.success) {
       return res.status(400).json({
-        message: "Validation failed",
-        errors: parseResult.error.issues[0]?.message,
+        // message: "Validation failed",
+        // errors: parseResult.error.issues[0]?.message,
+        success: false,
+        message: "Forbidden access"
       });
     }
 
-    const foundIndex = items.findIndex(
+    const itemFilter = items.filter(
       (i: Item) => i.userId === userId
     );
 
-    if (foundIndex === -1) {
+    if (itemFilter.length <= 0) {
       return res.status(404).json({
         success: false,
         message: `items for user ID ${userId} not found`,
@@ -42,7 +45,7 @@ router.get("/:userId",(req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      data: items[foundIndex],
+      data: itemFilter
     });
   } catch (err) {
     return res.status(500).json({
