@@ -54,7 +54,7 @@ export const verifyToken = (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req.params; 
+    const { UserId } = req.params; 
 
     if (!req.user) {
       return res.status(401).json({
@@ -63,7 +63,7 @@ export const verifyToken = (
       });
     }
 
-    if (req.user.userId !== userId) {
+    if (req.user.userId !== UserId) {
       return res.status(403).json({
         success: false,
         message: "Forbidden access",
