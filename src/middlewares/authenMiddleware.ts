@@ -1,81 +1,81 @@
-import { type Request, type Response, type NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+  import { type Request, type Response, type NextFunction } from "express";
+  import jwt from "jsonwebtoken";
+  import dotenv from "dotenv";
+  dotenv.config();
 
-import { type CustomRequest, type UserPayload } from "../libs/types.js";
+  import { type CustomRequest, type UserPayload } from "../libs/types.js";
 
-export const authenticateToken = (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({
-      success: false,
-      message: "Authorization header is required",
-    });
-  }
-
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null)
-    return res.status(401).json({
-      success: false,
-      message: "Token is required",
-    });
-
-  try {
-    const jwt_secret = process.env.JWT_SECRET || "this_is_my_secret";
-    jwt.verify(token, jwt_secret, (err, user) => {
-      if (err)
-        return res.status(403).json({
-          success: false,
-          message: "Invalid or expired token",
-        });
-
-      req.user = user as UserPayload;
-      req.token = token;
-
-      next();
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Something is wrong with authentication process",
-      error: err,
-    });
-  }
-};
-
-export const verifyToken = (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { UserId } = req.params; 
-
-    if (!req.user) {
+  export const authenticateToken = (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized",
+        message: "Authorization header is required",
       });
     }
 
-    if (req.user.userId !== UserId) {
-      return res.status(403).json({
+    const token = authHeader && authHeader.split(" ")[1];
+    if (token == null)
+      return res.status(401).json({
         success: false,
-        message: "Forbidden access",
+        message: "Token is required",
+      });
+
+    try {
+      const jwt_secret = process.env.JWT_SECRET || "this_is_my_secret";
+      jwt.verify(token, jwt_secret, (err, user) => {
+        if (err)
+          return res.status(403).json({
+            success: false,
+            message: "Invalid or expired token",
+          });
+
+        req.user = user as UserPayload;
+        req.token = token;
+
+        next();
+      });
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Something is wrong with authentication process",
+        error: err,
       });
     }
+  };
 
-    next();
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error: err,
-    });
-  }
-};
+  export const verifyToken = (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const UserId = req.params.userId; 
+
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      if (req.user.userId !== UserId) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden access",
+        });
+      }
+
+      next();
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Something went wrong",
+        error: err,
+      });
+    }
+  };

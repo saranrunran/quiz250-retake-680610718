@@ -22,12 +22,13 @@ import { authenticateToken, verifyToken } from "../middlewares/authenMiddleware.
 const router = Router();
 
 // GET /api/vXXX/items/:userId 
-router.get("/:userId", authenticateToken, verifyToken, (req: CustomRequest, res: Response) => {
+router.get("/:userId", authenticateToken, (req: CustomRequest, res: Response) => {
   try {
     const userId = req.params.userId;
     const parseResult = zUserId.safeParse(userId);
     //บรรทัดข้างล่างนี้ควรจะได้ tokenของยูสเซอร์ออกมา แต่หนุก็ไม่แน่ใจว่าทำไมมันไม่ได้
     // const token = req.query.authenticateToken;
+    // พอลองเขียน verify แล้ว แต่มันไม่ verify ให้ TT-TT
     
     if (!parseResult.success) {
       return res.status(400).json({
