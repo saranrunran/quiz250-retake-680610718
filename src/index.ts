@@ -3,8 +3,8 @@ import express, { type Request, type Response } from "express";
 // import middlewares
 import morgan from "morgan";
 
-import users_route from "./routes/usersRoutes";
-import items_cart from "./routes/itemsRoutes";
+import users_route from "./routes/usersRoutes.js";
+import items_cart from "./routes/itemsRoutes.js";
 
 const app = express();
 const port = 3000;
