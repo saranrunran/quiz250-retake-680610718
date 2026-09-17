@@ -3,6 +3,9 @@ import express, { type Request, type Response } from "express";
 // import middlewares
 import morgan from "morgan";
 
+import users_route from "./routes/usersRoutes";
+import items_cart from "./routes/itemsRoutes";
+
 const app = express();
 const port = 3000;
 
@@ -37,6 +40,9 @@ app.get("/student", (req: Request, res: Response) => {
     }
   });
 });
+
+app.use("/api/v718", users_route);
+app.use("/api/v718/cart", items_cart);
 
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);

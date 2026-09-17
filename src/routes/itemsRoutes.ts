@@ -10,17 +10,47 @@ import {
 // import types
 import type { Item } from "../libs/types.ts";
 // import database
-import { items } from "../db/db.ts";
+import { items } from "../db/db.js";
 //import uuid
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
 
 // GET /api/vXXX/items/:userId 
-router.get("",(req: Request, res: Response) => {
+router.get("/:userId",(req: Request, res: Response) => {
+    try {
+    const userId = req.params.userId;
+    const parseResult = zUserId.safeParse(userId);
+
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: parseResult.error.issues[0]?.message,
+      });
+    }
+
+    const foundIndex = items.findIndex(
+      (i: Item) => i.userId === userId
+    );
+
+    if (foundIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: `items for user ID ${userId} not found`,
+      });
+    }
+
     res.status(200).json({
       success: true,
+      data: items[foundIndex],
     });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Something is wrong, please try again",
+      error: err,
+    });
+  }
 
 });
 
