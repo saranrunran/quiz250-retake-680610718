@@ -48,3 +48,34 @@ export const authenticateToken = (
   }
 };
 
+export const verifyToken = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.params; 
+
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    if (req.user.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden access",
+      });
+    }
+
+    next();
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: err,
+    });
+  }
+};

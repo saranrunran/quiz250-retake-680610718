@@ -17,16 +17,17 @@ import { success } from "zod";
 import { users } from "../db/db.js";
 
 import type { User, UserPayload, CustomRequest } from "../libs/types.ts";
-import { authenticateToken } from "../middlewares/authenMiddleware.ts";
+import { authenticateToken, verifyToken } from "../middlewares/authenMiddleware.ts";
 
 const router = Router();
 
 // GET /api/vXXX/items/:userId 
-router.get("/:userId", authenticateToken, (req: CustomRequest, res: Response) => {
+router.get("/:userId", authenticateToken, verifyToken, (req: CustomRequest, res: Response) => {
   try {
     const userId = req.params.userId;
     const parseResult = zUserId.safeParse(userId);
-    const token = req.query.authenticateToken;
+    //บรรทัดข้างล่างนี้ควรจะได้ tokenของยูสเซอร์ออกมา แต่หนุก็ไม่แน่ใจว่าทำไมมันไม่ได้
+    // const token = req.query.authenticateToken;
     
     if (!parseResult.success) {
       return res.status(400).json({
@@ -36,8 +37,8 @@ router.get("/:userId", authenticateToken, (req: CustomRequest, res: Response) =>
     }
 
     // หนูไม่แน่ใจกับเรื่องนี้ แต่ก็คือดึงโทเคนจากพารามมา แล้วก็เอาไปเช็คกับที่เรามีอยู่ว่าตรงกันไหม
-    // if(token !== userId) {
-    //   return res.status(400).json({
+    // if(userId !== String(token)) {
+    //   return res.status(403).json({
     //     success: false,
     //     message: "Forbidden access"
     //   });
@@ -58,6 +59,7 @@ router.get("/:userId", authenticateToken, (req: CustomRequest, res: Response) =>
       success: true,
       data: itemFilter
     });
+
   } catch (err) {
     return res.status(500).json({
       success: false,
