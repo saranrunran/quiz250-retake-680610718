@@ -25,6 +25,19 @@ app.get("/me", (req: Request, res: Response) => {
   });
 });
 
+app.get("/student", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Student Information",
+    data: {
+      studentId: "680610718",
+      firstName: "Saranporn",
+      lastName: "Putsadee",
+      section: "001"
+    }
+  });
+});
+
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
 });
